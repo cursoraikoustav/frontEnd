@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://your-production-domain-here'
+  apiBaseUrl: 'https://backend-3diy.onrender.com'
 };
