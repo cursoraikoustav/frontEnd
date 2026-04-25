@@ -1,0 +1,32 @@
+:root {
+  color-scheme: dark;
+  --page-bg:
+    radial-gradient(circle at top left, rgba(58, 123, 213, 0.35), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(138, 92, 246, 0.28), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(14, 203, 129, 0.18), transparent 22%),
+    linear-gradient(160deg, #07111f 0%, #0d1728 45%, #101d34 100%);
+  --text: #f5f8ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+code {
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  font-family: Consolas, 'Courier New', monospace;
+}

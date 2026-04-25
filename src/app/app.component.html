@@ -1,0 +1,150 @@
+<div class="shell">
+  <header class="hero">
+    <div class="hero__copy">
+      <p class="eyebrow">Angular 21 Preview + Spring Boot Issue Client</p>
+      <h1>Manage issues from a dashboard your API deserves.</h1>
+      <p class="hero__text">
+        A clean Angular frontend for listing, creating, viewing, and deleting issues against your
+        <code>/api/issue</code> endpoints.
+      </p>
+      <div class="hero__status">
+        <span class="status-dot"></span>
+        <span>{{ statusMessage() }}</span>
+      </div>
+    </div>
+
+    <div class="hero__card">
+      <p>Backend target</p>
+      <strong>http://localhost:8069/api/issue</strong>
+      <ul>
+        <li><code>GET /list</code></li>
+        <li><code>POST /create</code></li>
+        <li><code>GET /get/{{ '{' }}id{{ '}' }}</code></li>
+        <li><code>POST /delete/{{ '{' }}id{{ '}' }}</code></li>
+      </ul>
+      <button type="button" class="ghost-button" (click)="refreshIssues()" [disabled]="listLoading()">
+        {{ listLoading() ? 'Refreshing...' : 'Refresh Issues' }}
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <section class="panel panel--wide">
+      <div class="panel__heading">
+        <div>
+          <p class="panel__eyebrow">Live Issue Feed</p>
+          <h2>Current issues</h2>
+        </div>
+        <span class="pill">{{ issues().length }} loaded</span>
+      </div>
+
+      @if (issues().length) {
+        <div class="issue-grid">
+          @for (issue of issues(); track issue) {
+            <article class="issue-card">
+              <p class="issue-card__label">Issue payload</p>
+              <pre>{{ issue }}</pre>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <h3>No issues yet</h3>
+          <p>Create your first issue or check whether your Spring Boot API is running on port 8069.</p>
+        </div>
+      }
+    </section>
+
+    <section class="panel">
+      <div class="panel__heading">
+        <div>
+          <p class="panel__eyebrow">Create</p>
+          <h2>Open a new issue</h2>
+        </div>
+      </div>
+
+      <form class="form" [formGroup]="issueForm" (ngSubmit)="submitIssue()">
+        <label>
+          <span>Issue ID</span>
+          <input type="text" formControlName="id" placeholder="Optional custom id" />
+        </label>
+
+        <label>
+          <span>Title</span>
+          <input type="text" formControlName="title" placeholder="Login page bug" />
+          @if (hasError('title')) {
+            <small class="field-error">{{ getIssueFieldError('title') }}</small>
+          }
+        </label>
+
+        <label>
+          <span>Description</span>
+          <textarea formControlName="description" rows="4" placeholder="Describe the problem clearly..."></textarea>
+          @if (hasError('description')) {
+            <small class="field-error">{{ getIssueFieldError('description') }}</small>
+          }
+        </label>
+
+        <div class="form__row">
+          <label>
+            <span>Status</span>
+            <select formControlName="status">
+              <option value="OPEN">OPEN</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="DONE">DONE</option>
+            </select>
+          </label>
+        </div>
+
+        <button type="submit" [disabled]="createLoading()">
+          {{ createLoading() ? 'Creating issue...' : 'Create Issue' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel__heading">
+        <div>
+          <p class="panel__eyebrow">Lookup</p>
+          <h2>Find an issue</h2>
+        </div>
+      </div>
+
+      <form class="form form--compact" [formGroup]="lookupForm" (ngSubmit)="fetchIssue()">
+        <label>
+          <span>Issue ID</span>
+          <input type="text" formControlName="id" placeholder="ISSUE-123" />
+        </label>
+        <button type="submit" [disabled]="fetchLoading()">
+          {{ fetchLoading() ? 'Fetching...' : 'Get Issue' }}
+        </button>
+      </form>
+
+      @if (selectedIssue(); as issue) {
+        <div class="result-card">
+          <p class="result-card__label">Issue response</p>
+          <pre>{{ issue }}</pre>
+        </div>
+      }
+    </section>
+
+    <section class="panel">
+      <div class="panel__heading">
+        <div>
+          <p class="panel__eyebrow">Delete</p>
+          <h2>Remove an issue</h2>
+        </div>
+      </div>
+
+      <form class="form form--compact" [formGroup]="deleteForm" (ngSubmit)="removeIssue()">
+        <label>
+          <span>Issue ID</span>
+          <input type="text" formControlName="id" placeholder="ISSUE-123" />
+        </label>
+        <button type="submit" class="danger" [disabled]="deleteLoading()">
+          {{ deleteLoading() ? 'Deleting...' : 'Delete Issue' }}
+        </button>
+      </form>
+    </section>
+  </main>
+</div>
