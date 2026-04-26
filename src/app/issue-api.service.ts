@@ -3,15 +3,15 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../environments/environment';
-import { IssuePayload } from './issue-api.models';
+import { IssuePayload, Issue } from './issue-api.models'; // Import Issue
 
 @Injectable({ providedIn: 'root' })
 export class IssueApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/api/issue`;
 
-  listIssues(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/list`);
+  listIssues(): Observable<Issue[]> { // Return Issue[]
+    return this.http.get<Issue[]>(`${this.baseUrl}/list`);
   }
 
   createIssue(payload: IssuePayload): Observable<string> {
@@ -20,11 +20,10 @@ export class IssueApiService {
     });
   }
 
-  getIssue(id: string): Observable<string> {
+  getIssue(id: string): Observable<Issue> { // Return Issue
     const params = new HttpParams().set('id', id);
-    return this.http.get(`${this.baseUrl}/get/${encodeURIComponent(id)}`, {
-      params,
-      responseType: 'text'
+    return this.http.get<Issue>(`${this.baseUrl}/get/${encodeURIComponent(id)}`, {
+      params // Removed responseType: 'text' so it parses JSON
     });
   }
 

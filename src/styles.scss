@@ -1,9 +1,20 @@
 :root {
   color-scheme: dark;
-  --page-bg:
-    radial-gradient(circle at top left, rgba(58, 123, 213, 0.35), transparent 28%),
-    radial-gradient(circle at 85% 10%, rgba(138, 92, 246, 0.28), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(14, 203, 129, 0.18), transparent 22%),
+  --page-bg: radial-gradient(
+      circle at top left,
+      rgba(58, 123, 213, 0.35),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(138, 92, 246, 0.28),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(14, 203, 129, 0.18),
+      transparent 22%
+    ),
     linear-gradient(160deg, #07111f 0%, #0d1728 45%, #101d34 100%);
   --text: #f5f8ff;
 }
@@ -21,12 +32,119 @@ body {
 body {
   background: var(--page-bg);
   color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 code {
   padding: 0.15rem 0.4rem;
   border-radius: 0.45rem;
   background: rgba(255, 255, 255, 0.08);
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Consolas, "Courier New", monospace;
+}
+/* --- New Additions --- */
+
+.clickable-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #222;
+  }
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #888;
+  padding: 0 5px;
+
+  &:hover {
+    color: red;
+  }
+}
+
+.modal-body {
+  p {
+    margin-bottom: 8px;
+    color: #444;
+  }
+
+  .badge {
+    background: #007bff;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .description-section {
+    margin-top: 20px;
+  }
+
+  .description-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 15px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    color: #333;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

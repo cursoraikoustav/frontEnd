@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { IssuePayload } from './issue-api.models';
+import { IssuePayload, Issue } from './issue-api.models'; // Added Issue
 import { IssueApiService } from './issue-api.service';
 
 @Component({
@@ -16,12 +16,16 @@ export class AppComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly issueApi = inject(IssueApiService);
 
-  protected readonly issues = signal<string[]>([]);
+  // Updated to strongly type the data
+  protected readonly issues = signal<Issue[]>([]);
+  protected readonly selectedIssue = signal<Issue | null>(null);
+  // New Signals for the Modal popup
+  protected readonly modalIssue = signal<Issue | null>(null);
+
   protected readonly listLoading = signal(false);
   protected readonly createLoading = signal(false);
   protected readonly fetchLoading = signal(false);
   protected readonly deleteLoading = signal(false);
-  protected readonly selectedIssue = signal<string | null>(null);
   protected readonly statusMessage = signal('Connect your Spring Boot service and start managing issues from one place.');
 
   protected readonly issueForm = this.formBuilder.nonNullable.group({
@@ -46,7 +50,7 @@ export class AppComponent {
   protected refreshIssues(): void {
     this.listLoading.set(true);
     this.issueApi.listIssues().subscribe({
-      next: (issues: string[]) => {
+      next: (issues: Issue[]) => { // Updated type
         this.issues.set(issues);
         this.statusMessage.set(`Loaded ${issues.length} issue${issues.length === 1 ? '' : 's'} from the API.`);
         this.listLoading.set(false);
@@ -80,12 +84,7 @@ export class AppComponent {
     this.issueApi.createIssue(payload).subscribe({
       next: (response: string) => {
         this.statusMessage.set(`Issue created successfully. API response: ${response}`);
-        this.issueForm.reset({
-          id: '',
-          title: '',
-          description: '',
-          status: 'OPEN'
-        });
+        this.issueForm.reset({ id: '', title: '', description: '', status: 'OPEN' });
         this.createLoading.set(false);
         this.refreshIssues();
       },
@@ -106,7 +105,7 @@ export class AppComponent {
     const { id } = this.lookupForm.getRawValue();
     this.fetchLoading.set(true);
     this.issueApi.getIssue(id).subscribe({
-      next: (issue: string) => {
+      next: (issue: Issue) => { // Updated type
         this.selectedIssue.set(issue);
         this.statusMessage.set(`Fetched issue ${id}.`);
         this.fetchLoading.set(false);
@@ -146,9 +145,27 @@ export class AppComponent {
     });
   }
 
-  protected trackIssue(_: number, issue: string): string {
-    return issue;
+  protected trackIssue(_: number, issue: Issue): string {
+    return issue.id;
   }
+
+  // --- NEW MODAL METHODS ---
+  protected openIssueModal(id: string): void {
+    // Triggers the GET /{id} call when clicking a title
+    this.issueApi.getIssue(id).subscribe({
+      next: (issue: Issue) => {
+        this.modalIssue.set(issue);
+      },
+      error: (error: unknown) => {
+        this.statusMessage.set(this.getErrorMessage(error, `Could not fetch issue details for ${id}.`));
+      }
+    });
+  }
+
+  protected closeModal(): void {
+    this.modalIssue.set(null);
+  }
+  // -------------------------
 
   protected hasError(controlName: 'title' | 'description' | 'status'): boolean {
     const control = this.issueForm.controls[controlName];
@@ -156,6 +173,7 @@ export class AppComponent {
   }
 
   protected getIssueFieldError(controlName: 'title' | 'description'): string {
+    // ... [existing error logic remains exactly the same]
     const control = this.issueForm.controls[controlName];
 
     if (control.hasError('required')) {
@@ -174,14 +192,13 @@ export class AppComponent {
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
+     // ... [existing error logic remains exactly the same]
     if (error instanceof HttpErrorResponse) {
       if (typeof error.error === 'string' && error.error.trim()) {
         return error.error;
       }
-
       return `${fallback} (${error.status || 'network error'})`;
     }
-
     return fallback;
   }
 }

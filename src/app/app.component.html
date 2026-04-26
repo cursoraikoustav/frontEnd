@@ -40,10 +40,10 @@
 
       @if (issues().length) {
         <div class="issue-grid">
-          @for (issue of issues(); track issue) {
-            <article class="issue-card">
-              <p class="issue-card__label">Issue payload</p>
-              <pre>{{ issue }}</pre>
+          @for (issue of issues(); track trackIssue($index, issue)) {
+            <article class="issue-card clickable-card" (click)="openIssueModal(issue.id)">
+              <p class="issue-card__label">Issue ID: {{ issue.id }}</p>
+              <h3 style="margin-top: 8px; font-size: 1.1rem; color: #333;">{{ issue.title }}</h3>
             </article>
           }
         </div>
@@ -122,8 +122,16 @@
 
       @if (selectedIssue(); as issue) {
         <div class="result-card">
-          <p class="result-card__label">Issue response</p>
-          <pre>{{ issue }}</pre>
+          <p class="result-card__label">Issue Details</p>
+          <div style="margin-top: 10px;">
+            <p><strong>ID:</strong> {{ issue.id }}</p>
+            <p><strong>Title:</strong> {{ issue.title }}</p>
+            <p><strong>Status:</strong> {{ issue.status }}</p>
+            <p style="margin-top: 10px;"><strong>Description:</strong></p>
+            <div style="background: #e9ecef; padding: 10px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9rem;">
+              {{ issue.description }}
+            </div>
+          </div>
         </div>
       }
     </section>
@@ -147,4 +155,25 @@
       </form>
     </section>
   </main>
+
+  @if (modalIssue(); as issue) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ issue.title }}</h2>
+          <button type="button" class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <p><strong>ID:</strong> {{ issue.id }}</p>
+          <p><strong>Status:</strong> <span class="pill">{{ issue.status }}</span></p>
+          
+          <div class="description-section">
+            <p><strong>Description:</strong></p>
+            <div class="description-box">{{ issue.description }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>
